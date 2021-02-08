@@ -3,6 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\louka\\OneDrive - Vrije Universiteit Brussel\\Documenten\\Arduino\\libraries\\CircularBuffer",
+                "C:\\Users\\louka\\OneDrive - Vrije Universiteit Brussel\\Documenten\\Arduino\\libraries\\RunningMedian",
                 "C:\\Users\\louka\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\**",
                 "C:\\Users\\louka\\OneDrive - Vrije Universiteit Brussel\\Documenten\\Arduino\\libraries\\**",
                 "C:\\Program Files (x86)\\Arduino\\libraries\\**",

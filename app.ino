@@ -1,3 +1,6 @@
+#include <RunningMedian.h>
+
+
 /* 
 autonome robotauto
 
@@ -11,7 +14,8 @@ Sahan	Baris
 
 ///////////////////////////	Change log //////////////////////////////////////////
 /* 
-08/02/2021 13:48: Begin
+08/02/2021 13:48: Begin                                                                                     L
+           14:57: 2 HC-SRO4 sensoren meten en printen afstand                                               L
 
 
 */
@@ -19,67 +23,78 @@ Sahan	Baris
 
 
 
+//#####################################    Variables   ##############################################
+//2 HC-SR04 sensoren
+const int SS1_trigPin = 18;    
+const int SS1_echoPin = 19;    
+long SS1_cm;
 
-const int SS1_trigPin = 18;    // Trigger
-const int SS1_echoPin = 19;    // Echo
-const int SS2_trigPin = 33;    // Trigger
-const int SS2_echoPin = 32;    // Echo
-long SS1_duration, SS2_duration, cm1, cm2;
- 
+const int SS2_trigPin = 33;    
+const int SS2_echoPin = 32;    
+long SS2_cm;
+
+long duration;
+
+RunningMedian SS1_samples = RunningMedian(50);
+RunningMedian SS2_samples = RunningMedian(50);
+
+
+ //####################################    SETUP    ##################################################
 void setup() {
+  //Start
   Serial.begin (115200);
   
+  //2 HC-SRO4 sensoren
   pinMode(SS1_trigPin, OUTPUT);
   pinMode(SS1_echoPin, INPUT);
+
   pinMode(SS2_trigPin, OUTPUT);
   pinMode(SS2_echoPin, INPUT);
 
 }
  
+//#########################################     LOOP     ###############################################
 void loop() {
-  // The sensor is triggered by a HIGH pulse of 10 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+
+  Serial.println("Starting scan");
+  Median_SS();
+  Serial.println("Done scanning");
+
+  Serial.print("De eerste sensor meet: ");
+  Serial.print(SS1_cm);
+  Serial.println(" cm");
+
+
+
+ Serial.println("De tweede sensor meet: ");
+ Serial.print(SS2_cm);
+ Serial.print(" cm");
+
+  Serial.println("Delay");
+  delay(10);
+
+
+
+}
+
+
+//######################################     Functies     ##########################################################
+void Median_SS(){
   digitalWrite(SS1_trigPin, LOW);
   delayMicroseconds(5);
   digitalWrite(SS1_trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(SS1_trigPin, LOW);
- 
-  // Read the signal from the sensor: a HIGH pulse whose
-  // duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  pinMode(SS1_echoPin, INPUT);
-  SS1_duration = pulseIn(SS1_echoPin, HIGH);
- 
-  // Convert the time into a distance
-  cm1 = (SS1_duration/2) / 29.1;     // Divide by 29.1 or multiply by 0.0343
-
-  Serial.print(cm1);
-  Serial.print("cm SS1");
-  Serial.println("");
-
-  delay(250);
+  duration = pulseIn(SS1_echoPin, HIGH);    // Mesure time needed for signal to return(in microseconds)
+  SS1_samples.add((duration/2) / 29.1);
+  SS1_cm = SS1_samples.getMedian();
 
   digitalWrite(SS2_trigPin, LOW);
   delayMicroseconds(5);
   digitalWrite(SS2_trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(SS2_trigPin, LOW);
- 
-  // Read the signal from the sensor: a HIGH pulse whose
-  // duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  pinMode(SS2_echoPin, INPUT);
-  SS2_duration = pulseIn(SS2_echoPin, HIGH);
-
-
-  cm2 = (SS2_duration/2) / 29.1;
-
-  Serial.print(cm2);
-  Serial.print("cm SS2");
-  Serial.println("");
-  Serial.println("einde data");
-  Serial.println("");
-
-  delay(1500); // standaard 250
+  duration = pulseIn(SS2_echoPin, HIGH);    // Mesure time needed for signal to return(in microseconds)
+  SS2_samples.add((duration/2) / 29.1);
+  SS2_cm = SS2_samples.getMedian();
 }
