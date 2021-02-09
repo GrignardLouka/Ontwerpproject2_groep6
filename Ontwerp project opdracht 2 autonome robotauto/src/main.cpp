@@ -43,23 +43,22 @@ int Joystick_Button;
 RunningMedian Joystick_X_samples = RunningMedian(20);    
 RunningMedian Joystick_Y_samples = RunningMedian(20);
 // Cte values
-const int JOYSTICK_Y_CENTER = 115;
-const int JOYSTICK_X_CENTER = 109;
+// const int JOYSTICK_Y_CENTER = 115;
+// const int JOYSTICK_X_CENTER = 109;
 
-int i = 0; ///////////////////////////////////////////////////////////////////////: TEMP FOR BETTER VIEWING
 //##################### Motor
 //Pin
-const int MOTORALWPIN1 = 33; 
-const int MOTORALWPIN2 = 25;
-const int MOTORARWPIN1 = 23; 
-const int MOTORARWPIN2 = 22; 
-const int MOTORVRWPIN1 = 21; 
-const int MOTORVRWPIN2 = 19;
-const int MOTORVLWPIN1 = 26; 
-const int MOTORVLWPIN2 = 27; 
-//Values
-int speed = 150;    ////////////////////////////////// This is a temp value for testing
+const int MOTORALWPIN1 = 27; 
+const int MOTORALWPIN2 = 26;
+const int MOTORARWPIN1 = 21; 
+const int MOTORARWPIN2 = 19; 
+const int MOTORVRWPIN1 = 23; 
+const int MOTORVRWPIN2 = 22;
+const int MOTORVLWPIN1 = 25; 
+const int MOTORVLWPIN2 = 33; 
+
 //######################################     Functies     ##########################################################
+//############################### HE-SOR4 sensor
 void Median_SS(){
   digitalWrite(SS1_TRIGPIN, LOW);           //set to LOW first to ensure a clean signal
   delayMicroseconds(5);
@@ -84,6 +83,7 @@ void Median_SS(){
   delay(5);
 }
 
+//############################### Joystick
 void Joystick_Position(){
   
   Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));
@@ -94,7 +94,7 @@ void Joystick_Position(){
   Joystick_Button = !digitalRead(JOYSTICKPIN_BUTTON);
 }
 
-//##################################### Movement
+//############################### Movement
 void Stop()
 {
   ledcWrite(0,0);
@@ -213,8 +213,6 @@ void Move(){
     Joystick_Button = !digitalRead(JOYSTICKPIN_BUTTON);
   }
 }
-  
-
 
  //####################################    SETUP    ##################################################
 void setup() {
@@ -272,8 +270,6 @@ void loop(){
 //########################## Joystick
 Joystick_Position();
 Move();
-
-
 
 /*
 //######################### HC_SRO4 sensor
