@@ -7,9 +7,13 @@ Sahan	Baris
 */
 //######################################     	Change log    ##############################################
 /* 
-08/02/2021     HC-SRO4 sensoren(meten + afstand printen)                                              
+08/02/2021     HC-SRO4 sensor(Measure + print in cm)      
+
 09/02/2021     Joystick
-               Movement
+               Wheel translation and rotation functions
+               Movement(translation)
+
+10/02/2021      
 */
 
 //#######################################     Libraries    ################################################
@@ -18,14 +22,16 @@ Sahan	Baris
 
 //#####################################    Variables   ###################################################
 //##################### 2 HC-SR04 sensoren
-const int SS1_TRIGPIN = 17;    
-const int SS1_ECHOPIN = 16;    
-long SS1_afstand;
-RunningMedian SS1_samples = RunningMedian(50);
+const int SS1_TRIGPIN = 17;  
+const int SS2_TRIGPIN = 4;  
 
-const int SS2_TRIGPIN = 4;    
-const int SS2_ECHOPIN = 2;    
+const int SS1_ECHOPIN = 16; 
+const int SS2_ECHOPIN = 2; 
+
+long SS1_afstand;
 long SS2_afstand;
+
+RunningMedian SS1_samples = RunningMedian(50);
 RunningMedian SS2_samples = RunningMedian(50);
 
 long duration;
@@ -58,26 +64,26 @@ const int MOTORVLWPIN1 = 25;
 const int MOTORVLWPIN2 = 33; 
 
 //######################################     Functies     ##########################################################
-//############################### HE-SOR4 sensor
+//############################### HC-SOR4 sensor
 void Median_SS(){
-  digitalWrite(SS1_TRIGPIN, LOW);           //set to LOW first to ensure a clean signal
+  digitalWrite(SS1_TRIGPIN, LOW);              //set to LOW first to ensure a clean signal
   delayMicroseconds(5);
   digitalWrite(SS1_TRIGPIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(SS1_TRIGPIN, LOW);
-  duration = pulseIn(SS1_ECHOPIN, HIGH);    // Mesure time needed for signal to return(in microseconds)
-  SS1_samples.add((duration/2) / 29.1);     //Convert to cm and add to array
-  SS1_afstand = SS1_samples.getMedian();    // Get Median distance
+  duration = pulseIn(SS1_ECHOPIN, HIGH) / 2;    // Mesure time needed for signal to return(in microseconds)(/2 heen en terug)
+  SS1_samples.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+  SS1_afstand = SS1_samples.getMedian();        // Get Median distance
 
-  delay(5);                                 // wait 5 ms to prevent to much noise from other sensor
+  delay(5);                                     // wait 5 ms to prevent to much noise from other sensor
 
   digitalWrite(SS2_TRIGPIN, LOW);
   delayMicroseconds(5);
   digitalWrite(SS2_TRIGPIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(SS2_TRIGPIN, LOW);
-  duration = pulseIn(SS2_ECHOPIN, HIGH);    
-  SS2_samples.add((duration/2) / 29.1);
+  duration = pulseIn(SS2_ECHOPIN, HIGH) / 2;    
+  SS2_samples.add((duration) / 29.1);
   SS2_afstand = SS2_samples.getMedian();
 
   delay(5);
@@ -182,35 +188,35 @@ void Rotate_Right(int snelheid){
 
 void Move(){
 
-  if(Joystick_X < 185 && Joystick_X > 70){
-    if(Joystick_Y > 182){
-      Forward((Joystick_Y - 182) * 3.45);
-    }
-    else if(Joystick_Y < 73){
-      Backward((73 - Joystick_Y) * 3.45);
-    }
-    else{
-      Stop();
-    }
-  }
-  else if(Joystick_X < 70){
-    Left((70 - Joystick_X)  * 3.6);
-  }
-  else if(Joystick_X > 185){
-    Right((Joystick_X - 185) * 3.6);
-  }
-  
-  while(Joystick_Button == 1){
-    if(Joystick_X > 185){
-      Rotate_Right((Joystick_X - 185) * 3.6);
+  if(Joystick_Button == 0){
+    if(Joystick_X < 185 && Joystick_X > 70){
+      if(Joystick_Y > 182){
+        Forward((Joystick_Y - 182) * 3.45);
+      }
+      else if(Joystick_Y < 73){
+        Backward((73 - Joystick_Y) * 3.45);
+      }
+      else{
+        Stop();
+      }
     }
     else if(Joystick_X < 70){
-      Rotate_Left((70 - Joystick_X) * 3.6);
+      Left((70 - Joystick_X)  * 3.6);
     }
-    else{
-      Stop();
+    else if(Joystick_X > 185){
+      Right((Joystick_X - 185) * 3.6);
     }
-    Joystick_Button = !digitalRead(JOYSTICKPIN_BUTTON);
+  }
+  else{ // if button = 1 = HIGH
+    if(Joystick_X > 185){
+        Rotate_Right((Joystick_X - 185) * 3.6);
+      }
+      else if(Joystick_X < 70){
+        Rotate_Left((70 - Joystick_X) * 3.6);
+      }
+      else{
+        Stop();
+      }
   }
 }
 
@@ -269,6 +275,7 @@ void loop(){
 
 //########################## Joystick
 Joystick_Position();
+//########################## Movement
 Move();
 
 /*
