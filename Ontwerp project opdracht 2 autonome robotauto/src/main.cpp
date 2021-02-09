@@ -1,9 +1,3 @@
-#include <Arduino.h>
-#include <RunningMedian.h>
-
-
-  // put your setup code here, to run once:
-
 /* 
 autonome robotauto
 Groep 6
@@ -11,16 +5,18 @@ El Madani 	Ilyas
 Grignard	Louka
 Sahan	Baris
 */
-
-///////////////////////////	Change log //////////////////////////////////////////
+//######################################     	Change log    ##############################################
 /* 
 08/02/2021     HC-SRO4 sensoren(meten + afstand printen)                                              
 09/02/2021     Joystick
                Banden
 */
 
+//#######################################     Libraries    ################################################
+#include <Arduino.h>
+#include <RunningMedian.h>
 
-//#####################################    Variables   ##############################################
+//#####################################    Variables   ###################################################
 //2 HC-SR04 sensoren
 const int SS1_trigPin = 18;    
 const int SS1_echoPin = 19;    
@@ -35,9 +31,12 @@ RunningMedian SS2_samples = RunningMedian(50);
 long duration;
 
 //Joystick
-const int Joystick_X = 34;
-const int Joystick_Y =35;
-const int Joystick_Button = 32;
+const int JoystickPin_X = 34;
+double Joystick_X;
+const int JoystickPin_Y =35;
+double Joystick_Y;
+const int JoystickPin_Button = 27;
+int Joystick_Button;
 
 //######################################     Functies     ##########################################################
 void Median_SS(){
@@ -64,7 +63,13 @@ void Median_SS(){
   delay(5);
 }
 
+void Joystick_Position(){
+  Joystick_X = map(analogRead(JoystickPin_X),0,4095,0,255);
+  Joystick_Y = map(analogRead(JoystickPin_Y),0,4095,0,255);
+  Joystick_Button = !digitalRead(JoystickPin_Button);
+  
 
+}
  //####################################    SETUP    ##################################################
 void setup() {
   //Start
@@ -85,18 +90,21 @@ void setup() {
 
 //#########################################     LOOP     ###############################################
 void loop(){
-//Joystick
+
+
+//########################## Joystick
+/*
+Joystick_Position();
 
 Serial.print("X value: ");
-Serial.println(map(analogRead(Joystick_X),0,4095,0,1023));
+Serial.println(Joystick_X);
 Serial.print("Y value: ");
-Serial.println(map(analogRead(Joystick_Y),0,4095,0,1023));
+Serial.println(Joystick_Y);
 Serial.print("Button value: ");
-Serial.println(!digitalRead(Joystick_Button));
+Serial.println(Joystick_Button);
+*/
 
-delay(1000);
-
-//HC_SRO4 sensor
+//######################### HC_SRO4 sensor
 /*
   Median_SS();
 
