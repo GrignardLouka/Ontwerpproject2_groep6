@@ -19,7 +19,7 @@ Sahan	Baris
 
 //#######################################     Libraries    ################################################
 #include <Arduino.h>
-  #include <RunningMedian.h>
+#include <RunningMedian.h>
 #include <ESP32Servo.h>
 
 //#####################################    Variables   ###################################################
@@ -42,11 +42,15 @@ const int SS2_TRIGPIN = 19;
 const int SS1_ECHOPIN = 16; 
 const int SS2_ECHOPIN = 2; 
 
-long SS1_afstand;
+long SS1_afstand1; long SS1_afstand2; long SS1_afstand3; long SS1_afstand4; long SS1_afstand5;
 long SS2_afstand;
 
-RunningMedian SS1_samples = RunningMedian(50);    //Uneven list so the value is a true measurement
-RunningMedian SS2_samples = RunningMedian(50);
+//5 spots(left, left-middle, middle, right-middle, right)
+RunningMedian SS1_samples1 = RunningMedian(49); RunningMedian SS1_samples2 =RunningMedian(49);
+RunningMedian SS1_samples3 = RunningMedian(49); RunningMedian SS1_samples4 = RunningMedian(49);
+RunningMedian SS1_samples5 =RunningMedian(49);    //Uneven list so the value is a true measurement
+
+RunningMedian SS2_samples = RunningMedian(49);
 
 long duration;
 
@@ -72,8 +76,8 @@ RunningMedian Joystick_Y_samples = RunningMedian(19);
 
 //##################### Motor
 //Pin
-const int MOTORALWPIN1 = 27; //27
-const int MOTORALWPIN2 = 26; //26
+const int MOTORALWPIN1 = 27; 
+const int MOTORALWPIN2 = 26; 
 const int MOTORARWPIN1 = 21; 
 const int MOTORARWPIN2 = 19; 
 const int MOTORVRWPIN1 = 23; 
@@ -82,7 +86,7 @@ const int MOTORVLWPIN1 = 25;
 const int MOTORVLWPIN2 = 33; 
 
 //###################### Servo
-const int SERVO_AROUND_Y_PIN = 1;
+const int SERVO_AROUND_Y_PIN = 12;
 const int SERVO_AROUND_X_PIN = 14;
 
 Servo Servo_Around_Y;
@@ -176,35 +180,49 @@ void Rotate_Right(int snelheid){
 }
 
 //############################### HC-SOR4 sensor
-void Median_SS(){
+
+void Median_SS(int i){
   digitalWrite(SS1_TRIGPIN, LOW);              //set to LOW first to ensure a clean signal
   delayMicroseconds(5);
   digitalWrite(SS1_TRIGPIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(SS1_TRIGPIN, LOW);
   duration = pulseIn(SS1_ECHOPIN, HIGH) / 2;    // Mesure time needed for signal to return(in microseconds)(/2 heen en terug)
-  SS1_samples.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-  SS1_afstand = SS1_samples.getMedian();        // Get Median distance
-
-  delay(5);                                     // wait 5 ms to prevent to much noise from other sensor
-
-
-  digitalWrite(SS2_TRIGPIN, LOW);
-  delayMicroseconds(5);
-  digitalWrite(SS2_TRIGPIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(SS2_TRIGPIN, LOW);
-  duration = pulseIn(SS2_ECHOPIN, HIGH) / 2;    
-  SS2_samples.add((duration) / 29.1);
-  SS2_afstand = SS2_samples.getMedian();
-
+  
+  if(i == 1){
+    SS1_samples1.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+    SS1_afstand1 = SS1_samples1.getMedian();        // Get Median distance
+  }
+  else if(i == 2){
+    SS1_samples2.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+    SS1_afstand2 = SS1_samples2.getMedian();        // Get Median distance
+  }
+  else if(i == 3){
+    SS1_samples3.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+    SS1_afstand3 = SS1_samples3.getMedian();        // Get Median distance
+  }
+  else if(i == 4){
+    SS1_samples4.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+    SS1_afstand4 = SS1_samples4.getMedian();        // Get Median distance
+  }
+  else if(i == 5){
+    SS1_samples5.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
+    SS1_afstand5 = SS1_samples5.getMedian();        // Get Median distance
+  }
+  if(i == 6){
+    digitalWrite(SS2_TRIGPIN, LOW);
+    delayMicroseconds(5);
+    digitalWrite(SS2_TRIGPIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(SS2_TRIGPIN, LOW);
+    duration = pulseIn(SS2_ECHOPIN, HIGH) / 2;    
+    SS2_samples.add((duration) / 29.1);
+    SS2_afstand = SS2_samples.getMedian();
+  }
+  
   delay(5);
   
 }
-
-
-
-//############################### Movement
 
 //############################### Joystick
 void Joystick_Position(){
@@ -266,6 +284,61 @@ void Move_Joystick(){
   }
 }
 
+//############################### Servo
+void Attach_Servos(){
+  Servo_Around_Y.setPeriodHertz(50);    // standard 50 hz servo
+	Servo_Around_Y.attach(SERVO_AROUND_Y_PIN, 500, 2500);
+  Servo_Around_X.setPeriodHertz(50);    // standard 50 hz servo
+	Servo_Around_X.attach(SERVO_AROUND_X_PIN, 500, 2500);
+}
+void Detach_Servos(){
+  Servo_Around_Y.detach();
+  Servo_Around_X.detach();
+}
+
+void Servo_Scan(){
+  //5 points to scan
+
+  Attach_Servos();
+
+
+
+
+  /*
+  for (int pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+		// in steps of 1 degree
+		Servo_Around_Y.write(pos);    // tell servo to go to position in variable 'pos'
+		delay(15);             // waits 15ms for the servo to reach the position
+	}
+	for (int pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+		Servo_Around_Y.write(pos);    // tell servo to go to position in variable 'pos'
+		delay(15);             // waits 15ms for the servo to reach the position
+	}
+  */
+
+
+
+
+
+
+
+
+
+  Median_SS(3);
+  //turn Servo to 2
+  Median_SS(2);
+  //turn to 1
+  Median_SS(1);
+  //turn to 4
+  Median_SS(4);
+  //turn to 5
+  Median_SS(5);
+  //Use second sensor
+  Median_SS(6);
+
+}
+//############################### Movement
+
  //####################################    SETUP    ##################################################
 void setup() {
   //Start
@@ -316,41 +389,16 @@ void setup() {
   ledcSetup(7,5000,8);
   ledcAttachPin(MOTORVLWPIN2,7); 
 
-  // Servo
-  
-
-
-  
-  Servo_Around_Y.setPeriodHertz(50);    // standard 50 hz servo
-	Servo_Around_Y.attach(SERVO_AROUND_Y_PIN, 500, 2500);
-  
-  //Servo_Around_X.setPeriodHertz(50);    // standard 50 hz servo
-	//Servo_Around_X.attach(SERVO_AROUND_X_PIN, 500, 2500);
-  
 }
 
 //#########################################     LOOP     ###############################################
 void loop(){
-  Servo_Around_Y.detach();
+  
 
-
-/*
-  for (int pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-		// in steps of 1 degree
-		Servo_Around_Y.write(pos);    // tell servo to go to position in variable 'pos'
-		delay(15);             // waits 15ms for the servo to reach the position
-	}
-	for (int pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-		Servo_Around_Y.write(pos);    // tell servo to go to position in variable 'pos'
-		delay(15);             // waits 15ms for the servo to reach the position
-	}
-  */
 
 //########################## Joystick
 Joystick_Position();
 Move_Joystick();
-
-
 
 //######################### HC_SRO4 sensor
   //Median_SS();
