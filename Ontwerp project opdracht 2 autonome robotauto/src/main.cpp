@@ -9,11 +9,12 @@ Sahan	Baris
 /* 
 08/02/2021     HC-SRO4 sensor(Measure + print in cm)      
 
-09/02/2021     Joystick
-               Wheel translation and rotation functions
-               Movement(translation)
+09/02/2021      Joystick
+                Wheel translation and rotation functions
+                Movement(translation)
 
 10/02/2021      
+                Movement(Rotation)
 */
 
 //#######################################     Libraries    ################################################
@@ -31,8 +32,8 @@ const int SS2_ECHOPIN = 2;
 long SS1_afstand;
 long SS2_afstand;
 
-RunningMedian SS1_samples = RunningMedian(50);
-RunningMedian SS2_samples = RunningMedian(50);
+RunningMedian SS1_samples = RunningMedian(49);    //Uneven list so the value is a true measurement
+RunningMedian SS2_samples = RunningMedian(49);
 
 long duration;
 
@@ -45,9 +46,11 @@ const int JOYSTICKPIN_BUTTON = 32;
 double Joystick_X;                    
 double Joystick_Y;
 int Joystick_Button; 
+int Rotating = 0;
 // List of last 20 values
-RunningMedian Joystick_X_samples = RunningMedian(20);    
-RunningMedian Joystick_Y_samples = RunningMedian(20);
+RunningMedian Joystick_X_samples = RunningMedian(19);    //Uneven list so the median is a true measurement
+RunningMedian Joystick_Y_samples = RunningMedian(19);
+
 // Cte values
 // const int JOYSTICK_Y_CENTER = 115;
 // const int JOYSTICK_X_CENTER = 109;
@@ -89,16 +92,7 @@ void Median_SS(){
   delay(5);
 }
 
-//############################### Joystick
-void Joystick_Position(){
-  
-  Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));
-  Joystick_X = Joystick_X_samples.getMedian();
-  Joystick_Y_samples.add(map(analogRead(JOYSTICKPIN_Y),0,4095,0,255));
-  Joystick_Y = Joystick_Y_samples.getMedian();
 
-  Joystick_Button = !digitalRead(JOYSTICKPIN_BUTTON);
-}
 
 //############################### Movement
 void Stop()
@@ -186,6 +180,25 @@ void Rotate_Right(int snelheid){
   Serial.println("Rotate Right");
 }
 
+//############################### Joystick
+void Joystick_Position(){
+  
+  Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));
+  Joystick_X = Joystick_X_samples.getMedian();
+  Joystick_Y_samples.add(map(analogRead(JOYSTICKPIN_Y),0,4095,0,255));
+  Joystick_Y = Joystick_Y_samples.getMedian();
+
+  Joystick_Button = !digitalRead(JOYSTICKPIN_BUTTON);
+  Serial.println(Joystick_Button);
+  if(Rotating == 1){    //If you stop rotating STOP and wait 750 ms to prevent weird behavior
+    if(Joystick_Button == 0){
+      Stop();
+      delay(750);
+      Rotating = 0;
+    }
+  }
+}
+
 void Move(){
 
   if(Joystick_Button == 0){
@@ -210,9 +223,11 @@ void Move(){
   else{ // if button = 1 = HIGH
     if(Joystick_X > 185){
         Rotate_Right((Joystick_X - 185) * 3.6);
+        Rotating = 1;
       }
       else if(Joystick_X < 70){
         Rotate_Left((70 - Joystick_X) * 3.6);
+        Rotating = 1;
       }
       else{
         Stop();
