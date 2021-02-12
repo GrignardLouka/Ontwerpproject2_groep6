@@ -49,21 +49,31 @@ String State = "Scanning";
 /*
 1 = Scan
 2 = Caclculate
-3 = Move
+3 = Moving
 4 = Collision 
 */
 
 int Loop_Counter;
+
+int Speed;      // Get calculated based on incline with bmo sensor
+                // tijd is based on the distance to the driving direction
 //##################### 2 HC-SR04 sensoren
 const int SS1_TRIGPIN = 18;  
-const int SS2_TRIGPIN = 19;  
+const int SS2_TRIGPIN = 19;
+const int SS3_TRIGPIN;
+const int SS4_TRIGPIN;  
 
 const int SS1_ECHOPIN = 16; 
-const int SS2_ECHOPIN = 2; 
+const int SS2_ECHOPIN = 2;
+const int SS3_ECHOPIN;
+const int SS4_ECHOPIN; 
 
-long SS1_afstand1; long SS1_afstand2; long SS1_afstand3; long SS1_afstand4; long SS1_afstand5;
 
-long SS1_afstand1_Down; long SS1_afstand3_Down; long SS1_afstand5_Down;
+
+
+long SS1_afstand1; long SS1_afstand2; long SS1_afstand3;
+
+long SS1_afstand1_Down; long SS1_afstand2_Down; long SS1_afstand3_Down;
 
 long SS2_afstand;
 
@@ -75,8 +85,6 @@ RunningMedian SS1_samples5 =RunningMedian(49);
 RunningMedian SS1_samples1_Down = RunningMedian(49); RunningMedian SS1_samples3_Down = RunningMedian(49); RunningMedian SS1_samples5_Down = RunningMedian(49);
 
 RunningMedian SS2_samples = RunningMedian(49);
-
-long duration;
 
 //####################### Joystick
 //Pin
@@ -205,6 +213,37 @@ void Rotate_Right(int snelheid){
   Serial.println("Rotate Right");
 }
 
+void Forward_Time(int tijd){
+  Forward(Speed);
+  delay(tijd);
+  Stop();
+}
+void Backward_Time(int tijd){
+  Backward(Speed);
+  delay(tijd);
+  Stop();
+} 
+void Right_Time(int tijd){
+  Right(Speed);
+  delay(tijd);
+  Stop();
+}
+void Left_Time(int tijd){
+  Left(Speed);
+  delay(tijd);
+  Stop();
+}
+void Rotate_Left_Time(int tijd){
+  Rotate_Left(Speed);
+  delay(tijd);
+  Stop();
+}
+void Rotate_Right_Time(int tijd){
+  Rotate_Right(Speed);
+  delay(tijd);
+  Stop();
+}
+
 //############################## Initialize
 void Initialize(){
   // Check Battery
@@ -284,60 +323,21 @@ void Move_Joystick(){
 //############################### MODE 3 (Automatic)
 //############### STATE 1 (scan)
 //HC-SOR4 sensor
-void SS_Meting(int i){
-  if( i != 6){
-    digitalWrite(SS1_TRIGPIN, LOW);              //set to LOW first to ensure a clean signal
-    delayMicroseconds(5);
-    digitalWrite(SS1_TRIGPIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(SS1_TRIGPIN, LOW);
-    duration = pulseIn(SS1_ECHOPIN, HIGH) / 2;    // Measure time needed for signal to return(in microseconds)(/2 signal travels  back and forth)
-  }
+long SS_Meting(const int TRIGGER, const int ECHO, RunningMedian Lijst){
+  long afstand;
+  long duration;
+
+  digitalWrite(TRIGGER, LOW);              //set to LOW first to ensure a clean signal
+  delayMicroseconds(5);
+  digitalWrite(TRIGGER, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER, LOW);
+
+  duration = pulseIn(ECHO, HIGH) / 2;    // Measure time needed for signal to return(in microseconds)(/2 signal travels  back and forth)
+  lijst. add(duration / 29.1);            // Convert to cm and add to list
+  afstand = SS.getMedian();              // Get median of the list(for a more accurate measurement)
   
-  
-  if(i == 1){
-    SS1_samples1.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-    SS1_afstand1 = SS1_samples1.getMedian();        // Get Median distance
-  }
-  else if(i == 2){
-    SS1_samples2.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-    SS1_afstand2 = SS1_samples2.getMedian();        // Get Median distance
-  }
-  else if(i == 3){
-    SS1_samples3.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-    SS1_afstand3 = SS1_samples3.getMedian();        // Get Median distance
-  }
-  else if(i == 4){
-    SS1_samples4.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-    SS1_afstand4 = SS1_samples4.getMedian();        // Get Median distance
-  }
-  else if(i == 5){
-    SS1_samples5.add((duration) / 29.1);           //Convert to cm and add to array(/29,1 om naar cm om te zetten)
-    SS1_afstand5 = SS1_samples5.getMedian();        // Get Median distance
-  }
-  if(i == 6){
-    digitalWrite(SS2_TRIGPIN, LOW);
-    delayMicroseconds(5);
-    digitalWrite(SS2_TRIGPIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(SS2_TRIGPIN, LOW);
-    duration = pulseIn(SS2_ECHOPIN, HIGH) / 2;    
-    SS2_samples.add((duration) / 29.1);
-    SS2_afstand = SS2_samples.getMedian();
-  }
-  if(i == 7){
-    SS1_samples5_Down.add((duration) / 29.1);
-    SS1_afstand5_Down = SS1_samples5_Down.getMedian();
-  }
-  if(i == 8){
-    SS1_samples3_Down.add((duration) / 29.1);
-    SS1_afstand3_Down = SS1_samples3_Down.getMedian();
-  }
-  if(i == 9){
-    SS1_samples1_Down.add((duration) / 29.1);
-    SS1_afstand1_Down = SS1_samples1_Down.getMedian();
-  }
-  delay(5);
+  return(afstand);
   
 }
 // Servo
@@ -352,54 +352,46 @@ void Detach_Servos(){
   Servo_Around_X.detach();
 }
 void Scan(){
-  //5 points to scan
 
+  //Attach timers to servo
   Attach_Servos();
+
+  //Bring servo to start position
   Servo_Around_Y.write(0);
+  Servo_Around_X.write(100);
+  Serial.println("Turning to first position");
 
   //Measure front
   // Pos 1  (rechts)
-  SS_Meting(1);
-  Serial.println("Turning to first position");
+  SS1_afstand1 = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples1);
+
   // Pos 2
-  Servo_Around_Y.write(28);
-  Serial.println("Turning to second position");
-  delay(200);
-  SS_Meting(2);
-  // Pos 3
   Servo_Around_Y.write(70);
   Serial.println("Turning to third position");
   delay(200);
-  SS_Meting(3);
-  // Pos 4
-  Servo_Around_Y.write(115);
-  Serial.println("Turning to fourth position");
-  delay(200);
-  SS_Meting(4);
-  // Pos 5
+  SS1_afstand2 = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples2);
+
+  // Pos 3
   Servo_Around_Y.write(160);
   Serial.println("Turning to fifth position");
   delay(200);
-  SS_Meting(5);
-  // Pos 6
-  //Serial.println("Turning to the sixth position");
-  delay(200);
-  //SS_Meting(6);
+  SS1_afstand3 = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples3);
   //pos 7
-  Servo_Around_X.write(75);
+  Servo_Around_X.write(15);
   Serial.println("Turning to the seventh position");
   delay(200);
-  SS_Meting(7);
+  SS1_afstand3_Down = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples3_Down);
+
   //pos 8
   Servo_Around_Y.write(70);
   Serial.println("Turning to the eight position");
   delay(200);
-  SS_Meting(8);
+  SS1_afstand2_Down = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples2_Down);
   //pos 9
   Servo_Around_Y.write(0);
   Serial.println("Turning to the ninth position");
   delay(200);
-  SS_Meting(9);
+  SS1_afstand1_Down = SS_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples1_Down);
   Servo_Around_X.write(0);
   Serial.println("Turning to the first position");
   delay(200);
@@ -409,6 +401,24 @@ void Scan(){
 
 //################ STATE 2 (Calculate)
 // Movement
+void Calculate_Movement(){
+  //Put the logic here
+
+  State = "Moving";
+}
+
+
+
+
+
+void Move_autmatic(){
+  //Put the movement logic in here
+  Serial.println("Not yet implemented");
+
+
+  State = "Scanning";
+}
+
 
 
 
@@ -424,9 +434,14 @@ void setup() {
 
   // 2 HC-SRO4 sensoren
   pinMode(SS1_TRIGPIN, OUTPUT);
-  pinMode(SS1_ECHOPIN, INPUT);
   pinMode(SS2_TRIGPIN, OUTPUT);
+  pinMode(SS3_TRIGPIN, OUTPUT);
+  pinMode(SS4_TRIGPIN, OUTPUT);
+  
+  pinMode(SS1_ECHOPIN, INPUT);
   pinMode(SS2_ECHOPIN, INPUT);
+  pinMode(SS3_ECHOPIN, INPUT);
+  pinMode(SS4_ECHOPIN, INPUT);
 
   // Joystick
   pinMode(JOYSTICKPIN_X, INPUT);
@@ -482,7 +497,10 @@ void setup() {
 //#########################################     LOOP     ###############################################
 void loop(){
 
-  Initialize();
+  //Initialize();
+
+
+
 
 
   //Check mode
@@ -500,9 +518,9 @@ void loop(){
     }
     else if(State == "Calculate"){
       //...
-      State = "Move";
+      State = "Moving";
     }
-    else if(State == "Move"){ 
+    else if(State == "Moving"){ 
       //...
       State = "Scanning";
     }
@@ -517,6 +535,6 @@ void loop(){
   
   delay(10);
   
-  Loop_Counter++;
+  Loop_Counter++;     //Currently not in use
 
 }
