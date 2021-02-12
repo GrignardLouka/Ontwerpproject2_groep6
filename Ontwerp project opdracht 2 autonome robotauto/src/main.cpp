@@ -140,7 +140,7 @@ void Stop()
   ledcWrite(7,0);
   Serial.println("Stop");
 }
-void Forward(int snelheid)
+void Forward(int snelheid, int tijd)
 {
   ledcWrite(0,snelheid);
   ledcWrite(1,0);
@@ -150,9 +150,15 @@ void Forward(int snelheid)
   ledcWrite(5,0);
   ledcWrite(6,snelheid);
   ledcWrite(7,0);
+
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
+
   Serial.println("Forward");
 }
-void Backward(int snelheid)
+void Backward(int snelheid, int tijd)
 {
   ledcWrite(0,0);
   ledcWrite(1,snelheid);
@@ -162,11 +168,17 @@ void Backward(int snelheid)
   ledcWrite(5,snelheid);
   ledcWrite(6,0);
   ledcWrite(7,snelheid);
+
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
   Serial.println("Backwards");
+
  
   
 }
-void Right(int snelheid)
+void Right(int snelheid, int tijd)
 {
   ledcWrite(0,0);
   ledcWrite(1,snelheid);
@@ -176,9 +188,15 @@ void Right(int snelheid)
   ledcWrite(5,snelheid);
   ledcWrite(6,snelheid);
   ledcWrite(7,0);
+
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
+
   Serial.println("Right");
 }
-void Left(int snelheid)
+void Left(int snelheid, int tijd)
 {
   ledcWrite(0,snelheid);
   ledcWrite(1,0);
@@ -188,9 +206,15 @@ void Left(int snelheid)
   ledcWrite(5,0);
   ledcWrite(6,0);
   ledcWrite(7,snelheid);
+
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
+
   Serial.println("Left");
 }
-void Rotate_Left(int snelheid){
+void Rotate_Left(int snelheid, int tijd){
   ledcWrite(0,0);
   ledcWrite(1,snelheid);
   ledcWrite(2,snelheid);
@@ -199,9 +223,15 @@ void Rotate_Left(int snelheid){
   ledcWrite(5,0);
   ledcWrite(6,0);
   ledcWrite(7,snelheid);
+
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
+
   Serial.println("Rotate Left");
 }
-void Rotate_Right(int snelheid){
+void Rotate_Right(int snelheid, int tijd){
   ledcWrite(0,snelheid);
   ledcWrite(1,0);
   ledcWrite(2,0);
@@ -210,38 +240,13 @@ void Rotate_Right(int snelheid){
   ledcWrite(5,snelheid);
   ledcWrite(6,snelheid);
   ledcWrite(7,0);
-  Serial.println("Rotate Right");
-}
 
-void Forward_Time(int tijd){
-  Forward(Speed);
-  delay(tijd);
-  Stop();
-}
-void Backward_Time(int tijd){
-  Backward(Speed);
-  delay(tijd);
-  Stop();
-} 
-void Right_Time(int tijd){
-  Right(Speed);
-  delay(tijd);
-  Stop();
-}
-void Left_Time(int tijd){
-  Left(Speed);
-  delay(tijd);
-  Stop();
-}
-void Rotate_Left_Time(int tijd){
-  Rotate_Left(Speed);
-  delay(tijd);
-  Stop();
-}
-void Rotate_Right_Time(int tijd){
-  Rotate_Right(Speed);
-  delay(tijd);
-  Stop();
+  if(tijd != 0){
+    delay(tijd);
+    Stop();
+  }
+
+  Serial.println("Rotate Right");
 }
 
 //############################## Initialize
