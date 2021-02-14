@@ -1,0 +1,3 @@
+Pins are declared in own header files
+PinMode is decleared in own source file, called in own header and then executed in void setup
+Variables are defined in Variables.h and decleared in specific header files

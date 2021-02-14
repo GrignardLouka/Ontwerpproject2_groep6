@@ -1,8 +1,4 @@
-// This is the file with basic movements functions
-
-#include <Arduino.h>
 #include "Basic Movement.h"
-
 
 void PinMode_Basic_Movement(){
   pinMode(MOTORALWPIN1,OUTPUT);       // Set pin to output

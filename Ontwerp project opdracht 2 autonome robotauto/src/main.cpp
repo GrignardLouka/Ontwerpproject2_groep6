@@ -5,6 +5,7 @@ El Madani 	Ilyas
 Grignard	Louka
 Sahan	Baris
 */
+
 //######################################     	Change log    ##############################################
 /* 
 08/02/2021     HC-SRO4 sensor(Measure + print in cm)      
@@ -18,32 +19,21 @@ Sahan	Baris
 11/02/2021      
 */
 
-
-
-//##########################################   Notes   ###################################################
-/*
-RunningMedian(list) is uneven so the median is a true measurement.
-
-
-
-
-*/
 //#######################################     Libraries    ################################################
-#include <Arduino.h>
-#include <RunningMedian.h>
+/*
+    Arduino.h
+    RunningMedian.h
+    ESP32Servo.h
+    Wire.h
+    BluetoothSerial.h
+*/
 #include <Wire.h>
 #include <BluetoothSerial.h>
 
-//######################################     Header files    ############################################
-#include "Basic Movement.h"
-#include "Joystick.h"
-#include "Scanning.h"
-#include "Metingen.h"
-
-//###################################### Predefine functions #############################################
-// Scanning.h 
-void PinMode_Scanning();
-void Scan();
+//######################################     Header files    #############################################
+#include "Mode1_Joystick.h"
+#include "Mode2_State1_Scanning.h"
+#include <Base_Variables.h>
 
 //#######################################  Constant Values  ############################################### 
 /*
@@ -52,14 +42,14 @@ JOYSTICK_X_CENTER = 109;
 Lowest allowed battery voltage is 7V 
 
 */
-//#####################################    Variables   ####################################################
+//#######################################   Variables   ####################################################
 String Mode;
 /*
 0 = Battery empty
 1 = Joystick
 2 = Automatic 
-
 */
+
 String State = "Scanning";
 /*
 1 = Scan
@@ -68,18 +58,14 @@ String State = "Scanning";
 4 = Collision 
 */
 
-//Bluetooth
-BluetoothSerial SerialBT;
-
-
 int Loop_Counter;
 int Speed;      // Get calculated based on incline with bmo sensor
                 // tijd is based on the distance to the driving direction
 
 
-//##################### Motor
 
-
+//Bluetooth
+BluetoothSerial SerialBT;
 
 
 //###################### Battery check
@@ -103,7 +89,7 @@ void Initialize(){
   if(Battery_Charge < 1450){
     Mode = "Battery low";
   }
-  else if(Battery_Charge == 1){
+  else if(Joystick_Control == 1){
     Mode = "Joystick mode";
   }
   else{
@@ -143,30 +129,23 @@ void setup() {
   Serial.begin (115200);
 
   //Bluetooth
-  SerialBT.begin("ESP32test");
+  SerialBT.begin("ESP32test");   
 
   //Battery check
   pinMode(BATTERY_LEVEL_PIN, INPUT);
 
-  // 2 HC-SRO4 sensoren
-  PinMode_Basic_Movement();
   PinMode_Scanning();
-
-
- 
-
-
+  PinMode_Basic_Movement();
+  PinMode_Joystick();
 
   
+
 }
 
 //#########################################     LOOP     ###############################################
 void loop(){
 
-  //Initialize();
-
-
-
+  Initialize();
 
   SerialBT.println("Test u mama bluetooth");
   //Check mode
@@ -195,9 +174,6 @@ void loop(){
                                                                               State = "Scanning";
                                                                             }
   }
-  
-
-
   
   delay(10);
   Loop_Counter++;

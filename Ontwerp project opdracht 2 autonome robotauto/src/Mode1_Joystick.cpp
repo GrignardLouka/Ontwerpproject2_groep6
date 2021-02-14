@@ -1,25 +1,4 @@
-//Joystick
-
-#include <Arduino.h>
-#include <RunningMedian.h>
-#include "Joystick.h"
-#include "Basic Movement.h"
-
-//####################### Joystick
-//Pin
-const int JOYSTICKPIN_X = 35;         
-const int JOYSTICKPIN_Y =34;
-const int JOYSTICKPIN_BUTTON = 32;
-const int JOYSTICK_CONTROL = 5;
-//Values
-double Joystick_X;                    
-double Joystick_Y;
-int Joystick_Button; 
-int Rotating = 0;
-int Joystick_Control;
-// List of last 20 values
-RunningMedian Joystick_X_samples = RunningMedian(19);    
-RunningMedian Joystick_Y_samples = RunningMedian(19);
+#include "Mode1_Joystick.h"
 
 void PinMode_Joystick(){
   pinMode(JOYSTICKPIN_X, INPUT);
@@ -27,7 +6,6 @@ void PinMode_Joystick(){
   pinMode(JOYSTICKPIN_BUTTON, INPUT_PULLUP);
   pinMode(JOYSTICK_CONTROL, INPUT_PULLDOWN);
 }
-
 
 void Joystick_Position(){
     Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));

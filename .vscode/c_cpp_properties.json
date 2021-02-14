@@ -17,6 +17,7 @@
             "intelliSenseMode": "windows-msvc-x64",
             "cStandard": "c17",
             "cppStandard": "c++17",
+            "C_Cpp.intelliSenseEngine": "Tag Parser",
             "compilerPath": ""
         }
     ],

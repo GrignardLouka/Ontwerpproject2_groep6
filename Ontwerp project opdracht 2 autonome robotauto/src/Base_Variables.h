@@ -1,10 +1,9 @@
-#ifndef TEST_H
-#define TEST_H
+#ifndef VARIABLES_H
+#define VARIABLES_H
 
-const int SERVO_AROUND_Y_PIN = 14;
-const int SERVO_AROUND_X_PIN = 12;
+#include <RunningMedian.h>
 
-//5 spots(lright, middle, left)
+//Scanning
 RunningMedian SS1_samples1 = RunningMedian(49); long SS1_afstand1;
 RunningMedian SS1_samples2 = RunningMedian(49); long SS1_afstand2;
 RunningMedian SS1_samples3 = RunningMedian(49); long SS1_afstand3;   
@@ -18,11 +17,13 @@ RunningMedian SS2_samples = RunningMedian(49); long SS2_afstand;
 Servo Servo_Around_Y;
 Servo Servo_Around_X;
 
-void PinMode_Scanning();
+//Joystick
+double Joystick_X;                    
+double Joystick_Y;
+int Joystick_Button; 
+int Rotating = 0;
+int Joystick_Control;
+RunningMedian Joystick_X_samples = RunningMedian(19);    
+RunningMedian Joystick_Y_samples = RunningMedian(19);
 
-void Attach_Servos();
-void Scan();
-void Detach_Servos();
-
-#endif
-
+ #endif
