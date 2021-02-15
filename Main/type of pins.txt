@@ -1,0 +1,10 @@
+4 HC trigger pins   DIGITAL OUTPUT
+1 Joystick controll DIGITAL INPUT
+1 Joystick Button   DIGITAL INPUT
+
+Battery level       ANALOG INPUT
+4 HC echo pins      ANALOG INPUT
+2 joystick          ANALOG INPUT
+8 Motors            PWM
+2 servo             attach servo               
+

@@ -25,15 +25,14 @@ Sahan	Baris
     RunningMedian.h
     ESP32Servo.h
     Wire.h
-    BluetoothSerial.h
 */
-#include <Wire.h>
-#include <BluetoothSerial.h>
+
+
 
 //######################################     Header files    #############################################
 #include "Mode1_Joystick.h"
 #include "Mode2_State1_Scanning.h"
-#include <Base_Variables.h>
+#include "Base_Variables.h"
 
 //#######################################  Constant Values  ############################################### 
 /*
@@ -62,20 +61,12 @@ int Loop_Counter;
 int Speed;      // Get calculated based on incline with bmo sensor
                 // tijd is based on the distance to the driving direction
 
-
-
-//Bluetooth
-BluetoothSerial SerialBT;
-
-
 //###################### Battery check
-const int BATTERY_LEVEL_PIN = 13;     
-RunningMedian Battery_Samples = RunningMedian(49);
-int Battery_Charge;
+const int BATTERY_LEVEL_PIN = 13; 
+RunningMedian Battery_Samples = RunningMedian(49); 
+double Battery_Charge;
 
 //######################################     Functies     ##########################################################
-//############################### Base functions
-
 //############################## Initialize
 void Initialize(){
   // Check Battery
@@ -97,12 +88,6 @@ void Initialize(){
   }
 }
 
-//############################### MODE 2 (Joystick)
-
-//############################### MODE 3 (Automatic)
-
-
-
 //################ STATE 2 (Calculate)
 // Movement
 void Calculate_Movement(){
@@ -119,17 +104,9 @@ void Move_autmatic(){
   State = "Scanning";
 }
 
-
-
-
  //####################################    SETUP    ##################################################
 void setup() {
-
-  //Start
   Serial.begin (115200);
-
-  //Bluetooth
-  SerialBT.begin("ESP32test");   
 
   //Battery check
   pinMode(BATTERY_LEVEL_PIN, INPUT);
@@ -144,14 +121,18 @@ void setup() {
 
 //#########################################     LOOP     ###############################################
 void loop(){
+Scan();
+Forward(200,0);
+delay(2000);
+Stop();
 
+/*
   Initialize();
 
-  SerialBT.println("Test u mama bluetooth");
   //Check mode
   
-  if(Mode == "Battery not connected")   {SerialBT.println("Battery not connected");}
-  else if(Mode == "Battery low")        {SerialBT.println("Battery low, please recharge.");}
+  if(Mode == "Battery not connected")   {Serial.println("Battery not connected");}
+  else if(Mode == "Battery low")        {Serial.println("Battery low, please recharge.");}
   else if(Mode == "Joystick mode")      {
                                           Joystick_Position();
                                           Move_Joystick();
@@ -177,5 +158,5 @@ void loop(){
   
   delay(10);
   Loop_Counter++;
-
+*/
 }

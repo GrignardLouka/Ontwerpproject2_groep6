@@ -1,0 +1,3 @@
+Joystick connected to 3.3 V
+make MCP23008 work that little bitch
+Check Battery lowest charge 
