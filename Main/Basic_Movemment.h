@@ -11,6 +11,7 @@ const int WIEL_VR2 = 13;
 const int WIEL_VL1 = 25; 
 const int WIEL_VL2 = 33; 
 
+const int ENABLE_PIN = 14;
 //PinMode
 void pinMode_Basic_Movement(){
     
@@ -26,36 +27,55 @@ void pinMode_Basic_Movement(){
   pinMode(WIEL_VL1,OUTPUT);
   pinMode(WIEL_VL2,OUTPUT);
 
+  pinMode(ENABLE_PIN, OUTPUT);
+  
+
 }
 
 //Basic Movement
+void move(int frequency = 50){
+  long period = (1 / frequency) / 2;
+
+  digitalWrite(ENABLE_PIN, HIGH);
+  delay(period);
+  digitalWrite(ENABLE_PIN, LOW); 
+  
+}
+void calculate_movement(){
+  
+}
+
 void stop(){
-  analogWrite(WIEL_AL1,0);
-  analogWrite(WIEL_AL2,0);
+  Movement_State = false;
 
-  analogWrite(WIEL_AR1,0);
-  analogWrite(WIEL_AR2,0);
+  digitalWrite(WIEL_AL1, LOW);
+  digitalWrite(WIEL_AL2, LOW);
 
-  analogWrite(WIEL_VR1,0);
-  analogWrite(WIEL_VR2,0);
+  digitalWrite(WIEL_AR1, LOW);
+  digitalWrite(WIEL_AR2, LOW);
 
-  analogWrite(WIEL_VL1,0);
-  analogWrite(WIEL_VL2,0);
+  digitalWrite(WIEL_VR1, LOW);
+  digitalWrite(WIEL_VR2, LOW);
+
+  digitalWrite(WIEL_VL1, LOW);
+  digitalWrite(WIEL_VL2, LOW);
 
   Serial.println("Stop");
 }
-void forward(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,snelheid);
-  analogWrite(WIEL_AL2,0);
+void forward(int snelheid, int tijd = 0){
+  Movement_State = true;
 
-  analogWrite(WIEL_AR1,snelheid);
-  analogWrite(WIEL_AR2,0);
+  digitalWrite(WIEL_AL1, HIGH);
+  digitalWrite(WIEL_AL2, LOW);
 
-  analogWrite(WIEL_VR1,snelheid);
-  analogWrite(WIEL_VR2,0);
+  digitalWrite(WIEL_AR1, HIGH);
+  digitalWrite(WIEL_AR2, LOW);
 
-  analogWrite(WIEL_VL1,snelheid);
-  analogWrite(WIEL_VL2,0);
+  digitalWrite(WIEL_VR1, HIGH);
+  digitalWrite(WIEL_VR2, LOW);
+
+  digitalWrite(WIEL_VL1, HIGH);
+  digitalWrite(WIEL_VL2, LOW);
 
   if(tijd != 0){
     delay(tijd);
@@ -64,40 +84,42 @@ void forward(int snelheid, int tijd){
 
   Serial.println("Forward");
 }
-void backward(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,0);
-  analogWrite(WIEL_AL2,snelheid);
+void backward(int snelheid, int tijd = 0){
+  Movement_State = true;  
 
-  analogWrite(WIEL_AR1,0);
-  analogWrite(WIEL_AR2,snelheid);
+  digitalWrite(WIEL_AL1,LOW);
+  digitalWrite(WIEL_AL2,HIGH);
 
-  analogWrite(WIEL_VR1,0);
-  analogWrite(WIEL_VR2,snelheid);
+  digitalWrite(WIEL_AR1,LOW);
+  digitalWrite(WIEL_AR2,HIGH);
 
-  analogWrite(WIEL_VL1,0);
-  analogWrite(WIEL_VL2,snelheid);
+  digitalWrite(WIEL_VR1,LOW);
+  digitalWrite(WIEL_VR2,HIGH);
+
+  digitalWrite(WIEL_VL1,LOW);
+  digitalWrite(WIEL_VL2,HIGH);
 
   if(tijd != 0){
     delay(tijd);
     stop();
   }
   Serial.println("Backwards");
-
- 
   
 }
-void right(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,0);
-  analogWrite(WIEL_AL2,snelheid);
+void right(int snelheid, int tijd = 0){
+  Movement_State = true;
 
-  analogWrite(WIEL_AR1,snelheid);
-  analogWrite(WIEL_AR2,0);
+  digitalWrite(WIEL_AL1,LOW);
+  digitalWrite(WIEL_AL2,HIGH);
 
-  analogWrite(WIEL_VR1,0);
-  analogWrite(WIEL_VR2,snelheid);
+  digitalWrite(WIEL_AR1,HIGH);
+  digitalWrite(WIEL_AR2,LOW);
 
-  analogWrite(WIEL_VL1,snelheid);
-  analogWrite(WIEL_VL2,0);
+  digitalWrite(WIEL_VR1,LOW);
+  digitalWrite(WIEL_VR2,HIGH);
+
+  digitalWrite(WIEL_VL1,HIGH);
+  digitalWrite(WIEL_VL2,LOW);
 
   if(tijd != 0){
     delay(tijd);
@@ -106,19 +128,20 @@ void right(int snelheid, int tijd){
 
   Serial.println("Right");
 }
-void left(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,snelheid);
-  analogWrite(WIEL_AL2,0);
+void left(int snelheid, int tijd = 0){
+  Movement_State = true;
 
-  analogWrite(WIEL_AR1,0);
-  analogWrite(WIEL_AR2,snelheid);
+  digitalWrite(WIEL_AL1,HIGH);
+  digitalWrite(WIEL_AL2,LOW);
 
-  analogWrite(WIEL_VR1,snelheid);
-  analogWrite(WIEL_VR2,0);
+  digitalWrite(WIEL_AR1,LOW);
+  digitalWrite(WIEL_AR2,HIGH);
 
-  analogWrite(WIEL_VL1,0);
-  analogWrite(WIEL_VL2,snelheid);
+  digitalWrite(WIEL_VR1,HIGH);
+  digitalWrite(WIEL_VR2,LOW);
 
+  digitalWrite(WIEL_VL1,LOW);
+  digitalWrite(WIEL_VL2,HIGH);
 
   if(tijd != 0){
     delay(tijd);
@@ -127,18 +150,20 @@ void left(int snelheid, int tijd){
 
   Serial.println("Left");
 }
-void rotate_Left(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,0);
-  analogWrite(WIEL_AL2,snelheid);
+void rotate_Left(int snelheid, int tijd = 0){
+  Movement_State = true;
 
-  analogWrite(WIEL_AR1,snelheid);
-  analogWrite(WIEL_AR2,0);
+  digitalWrite(WIEL_AL1,LOW);
+  digitalWrite(WIEL_AL2,HIGH);
 
-  analogWrite(WIEL_VR1,snelheid);
-  analogWrite(WIEL_VR2,0);
+  digitalWrite(WIEL_AR1,HIGH);
+  digitalWrite(WIEL_AR2,LOW);
 
-  analogWrite(WIEL_VL1,0);
-  analogWrite(WIEL_VL2,snelheid);
+  digitalWrite(WIEL_VR1,HIGH);
+  digitalWrite(WIEL_VR2,LOW);
+
+  digitalWrite(WIEL_VL1,LOW);
+  digitalWrite(WIEL_VL2,HIGH);
 
   if(tijd != 0){
     delay(tijd);
@@ -147,18 +172,20 @@ void rotate_Left(int snelheid, int tijd){
 
   Serial.println("Rotate Left");
 }
-void rotate_Right(int snelheid, int tijd){
-  analogWrite(WIEL_AL1,snelheid);
-  analogWrite(WIEL_AL2,0);
+void rotate_Right(int snelheid, int tijd = 0){
+  Movement_State = true;
 
-  analogWrite(WIEL_AR1,0);
-  analogWrite(WIEL_AR2,snelheid);
+  digitalWrite(WIEL_AL1,HIGH);
+  digitalWrite(WIEL_AL2,LOW);
 
-  analogWrite(WIEL_VR1,0);
-  analogWrite(WIEL_VR2,snelheid);
+  digitalWrite(WIEL_AR1,LOW);
+  digitalWrite(WIEL_AR2,HIGH);
 
-  analogWrite(WIEL_VL1,snelheid);
-  analogWrite(WIEL_VL2,0);
+  digitalWrite(WIEL_VR1,LOW);
+  digitalWrite(WIEL_VR2,HIGH);
+
+  digitalWrite(WIEL_VL1,HIGH);
+  digitalWrite(WIEL_VL2,LOW);
 
   if(tijd != 0){
     delay(tijd);

@@ -27,23 +27,20 @@ Sahan Baris
 #include <Adafruit_MCP23008.h>
 #include <RunningMedian.h>
 #include <ESP32Servo.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
 #include "Variables.h"
 #include "Basic_Movemment.h"
 #include "Mode2_State1_Scanning.h"
 #include "Mode1_Joystick.h"
 
-//######################################################    Constant Values    #######################################################
-/*
-
-
-Lowest allowed battery voltage is 7V 
-*/
 
 //###########################################################    Pins    ##############################################################
 //Battery
 const int BATTERY_LEVEL_PIN = 2; 
-const int BUZZER_BATTERY_LEVEL = 6;
+const int BUZZER_BATTERY_LEVEL = 15;
 
 //#########################################################    Variables    ###########################################################
 //Mode
@@ -76,6 +73,7 @@ int Speed;      // Get calculated based on incline with bmo sensor
                 // tijd is based on the distance to the driving direction
 
 //#########################################################    Functions    ###########################################################
+
 void initialize(){
   // Check Battery
   Battery_Samples.add(analogRead(BATTERY_LEVEL_PIN)); // Read battery charge and add to list
@@ -83,35 +81,32 @@ void initialize(){
   if(Loop_Counter % 100 == 0){Serial.println(Battery_Charge);} //Print battery charge every 100 loops so it doesn't overrun the console
 
   //Check which of the 4 modes the robot is in
-  if(Battery_Charge == 0){
+  if(Battery_Charge < 2000){
     Mode = "Battery not connected";
   }
   else if(Battery_Charge < Lowest_Battery_Charge){
     Mode = "Battery low";
   }
-  else if(!mcp.digitalRead(JOYSTICK_CONTROL) == 1){
+  else if(mcp.digitalRead(JOYSTICK_CONTROL) == 1){
     Mode = "Joystick mode";
   }
   else{
     Mode = "Automatic mode";
   }
-  Serial.println(!mcp.digitalRead(JOYSTICK_CONTROL));
 }
 
-void calculate_Movement(){
-  //Put the logic here
+void buzzer_Switchmode(){
+  while(Battery_Charge < 2000){
+    tone(BUZZER_BATTERY_LEVEL, 2000);
+    delay(1000);
+    noTone(BUZZER_BATTERY_LEVEL);
+    delay(1000);
 
-  State = "Moving";
+  Battery_Charge = analogRead(BATTERY_LEVEL_PIN);
+
+  }
+  
 }
-
-void move_autmatic(){
-  //Put the movement logic in here
-  Serial.println("Not yet implemented");
-
-
-  State = "Scanning";
-}
-
 
 //###########################################################    Setup    #############################################################
 void setup() {
@@ -120,10 +115,13 @@ void setup() {
 
   //Start MCP23008
   mcp.begin();
+  bno.begin();
+  delay(1000);
+  bno.setExtCrystalUse(true);
 
   //Battery check
   pinMode(BATTERY_LEVEL_PIN, INPUT);
-  mcp.pinMode(BUZZER_BATTERY_LEVEL, OUTPUT);
+  pinMode(BUZZER_BATTERY_LEVEL, OUTPUT);
 
   //Basic Movement
   pinMode_Basic_Movement();
@@ -139,35 +137,39 @@ void setup() {
 //############################################################    Loop    #############################################################
 void loop(){
 
-  Initialize();
 
-  //Check mode
-  
-  if(Mode == "Battery not connected")   { Serial.println("Battery not connected");}
+  //initialize();
 
+  if(Mode == "Battery not connected")   { Serial.println("Battery not connected");
+                                          //noTone(BUZZER_BATTERY_LEVEL);
+                                          //buzzer_Switchmode();
+                                        }
   else if(Mode == "Battery low")        { 
                                           Serial.println("Battery low, please recharge.");
-                                          mcp.digitalWrite(BUZZER_BATTERY_LEVEL, HIGH);
+                                          //tone(BUZZER_BATTERY_LEVEL, 2000);
+                                          stop();
                                         }
 
   else if(Mode == "Joystick mode")      {
+                                          noTone(BUZZER_BATTERY_LEVEL);
                                           Serial.println("Joystick mode");
                                           joystick_Position();
                                           move_Joystick();
                                         }
 
   else if(Mode == "Automatic mode")     {
+                                          noTone(BUZZER_BATTERY_LEVEL);
                                           if(State == "Scanning")        { 
-                                                                            //Serial.println("Scanning");
-                                                                            //scan();                                                                           
+                                                                            Serial.println("Scanning");
+                                                                            scan();                                                                           
                                                                             State = "Calculate";                                                                   
                                                                          }
                                           else if(State == "Calculate")  {
-                                                                            //...
+                                                                            
                                                                             State = "Moving";
                                                                           }
                                           else if(State == "Moving")      { 
-                                                                            //...
+                                                                            move();
                                                                             State = "Scanning";
                                                                           }
                                           else if(State == "Collision")   {      
@@ -175,8 +177,7 @@ void loop(){
                                                                               State = "Scanning";
                                                                             }
   }
-  
-  delay(10);
+
   Loop_Counter++;
 
 }

@@ -4,9 +4,9 @@ const int JOYSTICKPIN_Y =34;
 const int JOYSTICKPIN_BUTTON = 4;
 const int JOYSTICK_CONTROL = 5;
 const int JOYSTICK_Y_CENTER = 115;
-const int JOYSTICK_Y_DISTANCE = ((255 - JOYSTICK_Y_CENTER) / 2) // 70
+const int JOYSTICK_Y_DISTANCE = ((255 - JOYSTICK_Y_CENTER) / 2); // 70
 const int JOYSTICK_X_CENTER = 109;
-const int JOYSTICK_X_DISTANCE = ((255 - JOYSTICK_X_CENTER) / 2) // 73
+const int JOYSTICK_X_DISTANCE = ((255 - JOYSTICK_X_CENTER) / 2); // 73
 
 //PinMode
 void pinMode_Joystick(){

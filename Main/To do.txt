@@ -1,3 +1,4 @@
-Joystick connected to 3.3 V
-make MCP23008 work that little bitch
+Joystick connected to 3.3 V          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+make MCP23008 work that little bitch XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Check Battery lowest charge 
+implement battery charge check on the board

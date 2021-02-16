@@ -38,6 +38,8 @@ void pinMode_Scanning(){
 }
 
 //Variable
+extern Adafruit_MCP23008 mcp;
+
 extern RunningMedian SS1_samples1;extern long SS1_afstand1;
 extern RunningMedian SS1_samples2; extern long SS1_afstand2;
 extern RunningMedian SS1_samples3; extern long SS1_afstand3;   
@@ -51,22 +53,45 @@ extern RunningMedian SS2_samples; extern long SS2_afstand;
 extern Servo Servo_Around_Y;
 extern Servo Servo_Around_X;
 
+extern const int BNO055_SAMPLERATE_DELAY_MS;
+extern Adafruit_BNO055 bno;
+extern RunningMedian lijstx; extern RunningMedian lijsty; extern RunningMedian lijstz;
+
 //Functions
+void bno_Meting(){
+  sensors_event_t event;
+  bno.getEvent(&event);
+
+  Serial.print(F("Orientation: "));
+  lijstx.add((float)event.orientation.x);
+  Serial.print("X: ");  Serial.print(lijstx.getMedian());
+  lijsty.add((float)event.orientation.y);
+  Serial.print("  Y: "); Serial.print(lijsty.getMedian());
+  lijstz.add((float)event.orientation.z);
+  Serial.print("  Z: "); Serial.println(lijstz.getMedian());
+
+  if(lijstz.getMedian() > -160 && lijstz.getMedian() < -90){
+    Serial.println("HELLING WOEHOE");
+  }
+
+  delay(BNO055_SAMPLERATE_DELAY_MS);
+}
 long ss_Meting(const int TRIGGER, const int ECHO, RunningMedian Lijst){
   long afstand;
   long duration;
 
-  mcp.digitalWrite(TRIGGER, LOW);              //set to LOW first to ensure a clean signal
-  delayMicroseconds(5);
-  mcp.digitalWrite(TRIGGER, HIGH);
-  delayMicroseconds(10);
-  mcp.digitalWrite(TRIGGER, LOW);
+  for(int i = 0; i < 100; i++){
+    mcp.digitalWrite(TRIGGER, LOW);              //set to LOW first to ensure a clean signal
+    delayMicroseconds(5);
+    mcp.digitalWrite(TRIGGER, HIGH);
+    delayMicroseconds(10);
+    mcp.digitalWrite(TRIGGER, LOW);
 
-  duration = pulseIn(ECHO, HIGH) / 2;    // Measure time needed for signal to return(in microseconds)(/2 signal travels  back and forth)
-  Lijst. add(duration / 29.1);            // Convert to cm and add to list
-  afstand = Lijst.getMedian();              // Get median of the list(for a more accurate measurement)
+    duration = pulseIn(ECHO, HIGH) / 2;    // Measure time needed for signal to return(in microseconds)(/2 signal travels  back and forth)
+    Lijst. add(duration / 29.1);            // Convert to cm and add to list
+  }
   
-  return(afstand);
+  return(Lijst.getMedian()); // Return median distance to eliminate outliars
   
 }
 void attach_Servos(){
@@ -100,25 +125,34 @@ void scan(){
   Serial.println("Turning to fifth position");
   delay(200);
   SS1_afstand3 = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples3);
-  //pos 7
-  Servo_Around_X.write(15);
-  Serial.println("Turning to the seventh position");
-  delay(200);
-  SS1_afstand3_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples3_Down);
 
-  //pos 8
-  Servo_Around_Y.write(70);
-  Serial.println("Turning to the eight position");
-  delay(200);
-  SS1_afstand2_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples2_Down);
-  //pos 9
-  Servo_Around_Y.write(0);
-  Serial.println("Turning to the ninth position");
-  delay(200);
-  SS1_afstand1_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples1_Down);
-  Servo_Around_X.write(0);
-  Serial.println("Turning to the first position");
-  delay(200);
+
+  if(Climbing){
+  //pos 7
+    Servo_Around_X.write(15);
+    Serial.println("Turning to the seventh position");
+    delay(200);
+    SS1_afstand3_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples3_Down);
+
+    //pos 8
+    Servo_Around_Y.write(70);
+    Serial.println("Turning to the eight position");
+    delay(200);
+    SS1_afstand2_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples2_Down);
+    //pos 9
+    Servo_Around_Y.write(0);
+    Serial.println("Turning to the ninth position");
+    delay(200);
+    SS1_afstand1_Down = ss_Meting(SS1_TRIGPIN, SS1_ECHOPIN,SS1_samples1_Down);
+    Servo_Around_X.write(0);
+    Serial.println("Turning to the first position");
+    delay(200);
+  }
+  else{
+    Servo_Around_Y.write(0);
+    delay(200);
+  }
+  
 
   detach_Servos();
 }
