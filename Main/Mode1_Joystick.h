@@ -1,4 +1,4 @@
-//Pin
+//####################################################################    Pin    ############################################################################
 const int JOYSTICKPIN_X = 35;         
 const int JOYSTICKPIN_Y =34;
 const int JOYSTICKPIN_BUTTON = 4;
@@ -8,7 +8,7 @@ const int JOYSTICK_Y_DISTANCE = ((255 - JOYSTICK_Y_CENTER) / 2); // 70
 const int JOYSTICK_X_CENTER = 109;
 const int JOYSTICK_X_DISTANCE = ((255 - JOYSTICK_X_CENTER) / 2); // 73
 
-//PinMode
+//##################################################################    PinMode    ############################################################################
 void pinMode_Joystick(){
   pinMode(JOYSTICKPIN_X, INPUT);
   pinMode(Joystick_Y, INPUT);
@@ -17,7 +17,7 @@ void pinMode_Joystick(){
 
 }
 
-//Variable
+//##################################################################    Variable    ############################################################################
 extern double Joystick_X;                    
 extern double Joystick_Y;
 extern int Joystick_Button; 
@@ -28,7 +28,7 @@ extern RunningMedian Joystick_Y_samples;
 
 extern Adafruit_MCP23008 mcp;
 
-//Functions
+//##################################################################    Functions    ############################################################################
 void joystick_Position(){
     Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));
     Joystick_X = Joystick_X_samples.getMedian();

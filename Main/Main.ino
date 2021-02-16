@@ -6,23 +6,7 @@ Grignard  Louka
 Sahan Baris
 */
 
-//#########################################################    Change log   ###########################################################
-/* 
-08/02/2021     HC-SRO4 sensor(Measure + print in cm)      
-
-09/02/2021      Joystick
-                Wheel translation and rotation functions
-                Movement(translation)
-
-10/02/2021      Movement(Rotation)
-
-11/02/2021      Servo + sensoren
-
-12/02/2021      MCP23008
-                Battery charge check
-*/
-
-//#########################################################    Libraries    ###########################################################
+//################################################################    Libraries    ############################################################################
 #include <Wire.h>
 #include <Adafruit_MCP23008.h>
 #include <RunningMedian.h>
@@ -32,53 +16,42 @@ Sahan Baris
 #include <utility/imumaths.h>
 
 #include "Variables.h"
-#include "Basic_Movemment.h"
-#include "Mode2_State1_Scanning.h"
+#include "Basic_Movement.h"
 #include "Mode1_Joystick.h"
+#include "Mode2_Automatic.h"
 
-
-//###########################################################    Pins    ##############################################################
+//#####################################################################    Pin    ##############################################################################
 //Battery
 const int BATTERY_LEVEL_PIN = 2; 
 const int BUZZER_BATTERY_LEVEL = 15;
 
-//#########################################################    Variables    ###########################################################
-//Mode
+//##################################################################    Variable    ############################################################################
 String Mode;
-/*
-0 = Battery empty
-1 = Joystick
-2 = Automatic 
-*/
+            /*
+            0 = Battery empty
+            1 = Joystick
+            2 = Automatic 
+            */
 
-//State
 String State = "Scanning";
-/*
-1 = Scan
-2 = Caclculate
-3 = Moving
-4 = Collision 
-*/
+                          /*
+                          1 = Scan
+                          2 = Caclculate
+                          3 = Moving
+                          4 = Collision 
+                          */
 
 //Battery
 RunningMedian Battery_Samples = RunningMedian(49); 
 int Battery_Charge;
 int Lowest_Battery_Charge = 2900;
 
-//Create new I/O Expander
-
-
-int Loop_Counter;
-int Speed;      // Get calculated based on incline with bmo sensor
-                // tijd is based on the distance to the driving direction
-
-//#########################################################    Functions    ###########################################################
+//##################################################################    Functions    ############################################################################
 
 void initialize(){
   // Check Battery
   Battery_Samples.add(analogRead(BATTERY_LEVEL_PIN)); // Read battery charge and add to list
   Battery_Charge = Battery_Samples.getMedian();       // Get median of battery charge list
-  if(Loop_Counter % 100 == 0){Serial.println(Battery_Charge);} //Print battery charge every 100 loops so it doesn't overrun the console
 
   //Check which of the 4 modes the robot is in
   if(Battery_Charge < 2000){
@@ -103,12 +76,10 @@ void buzzer_Switchmode(){
     delay(1000);
 
   Battery_Charge = analogRead(BATTERY_LEVEL_PIN);
-
   }
-  
 }
 
-//###########################################################    Setup    #############################################################
+//##################################################################    Setup    ############################################################################
 void setup() {
   //Start serial
   Serial.begin (115200);
@@ -134,7 +105,7 @@ void setup() {
   
 }
 
-//############################################################    Loop    #############################################################
+//##################################################################    Loop    ############################################################################
 void loop(){
 
 
@@ -169,7 +140,7 @@ void loop(){
                                                                             State = "Moving";
                                                                           }
                                           else if(State == "Moving")      { 
-                                                                            move();
+                                                                            
                                                                             State = "Scanning";
                                                                           }
                                           else if(State == "Collision")   {      
@@ -177,7 +148,5 @@ void loop(){
                                                                               State = "Scanning";
                                                                             }
   }
-
-  Loop_Counter++;
 
 }

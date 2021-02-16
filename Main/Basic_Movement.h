@@ -1,4 +1,4 @@
-//Pin
+//##################################################################    Pin    ############################################################################
 const int WIEL_AL1 = 27; 
 const int WIEL_AL2 = 26; 
 
@@ -12,7 +12,8 @@ const int WIEL_VL1 = 25;
 const int WIEL_VL2 = 33; 
 
 const int ENABLE_PIN = 14;
-//PinMode
+
+//##################################################################    PinMode    ############################################################################
 void pinMode_Basic_Movement(){
     
   pinMode(WIEL_AL1,OUTPUT);       // Set pin to output
@@ -32,21 +33,9 @@ void pinMode_Basic_Movement(){
 
 }
 
-//Basic Movement
-void move(int frequency = 50){
-  long period = (1 / frequency) / 2;
-
-  digitalWrite(ENABLE_PIN, HIGH);
-  delay(period);
-  digitalWrite(ENABLE_PIN, LOW); 
-  
-}
-void calculate_movement(){
-  
-}
-
+//##################################################################    Functions    ############################################################################
 void stop(){
-  Movement_State = false;
+  Movement_State = 0;
 
   digitalWrite(WIEL_AL1, LOW);
   digitalWrite(WIEL_AL2, LOW);
@@ -63,7 +52,6 @@ void stop(){
   Serial.println("Stop");
 }
 void forward(int snelheid, int tijd = 0){
-  Movement_State = true;
 
   digitalWrite(WIEL_AL1, HIGH);
   digitalWrite(WIEL_AL2, LOW);
@@ -85,7 +73,6 @@ void forward(int snelheid, int tijd = 0){
   Serial.println("Forward");
 }
 void backward(int snelheid, int tijd = 0){
-  Movement_State = true;  
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -107,7 +94,6 @@ void backward(int snelheid, int tijd = 0){
   
 }
 void right(int snelheid, int tijd = 0){
-  Movement_State = true;
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -129,8 +115,6 @@ void right(int snelheid, int tijd = 0){
   Serial.println("Right");
 }
 void left(int snelheid, int tijd = 0){
-  Movement_State = true;
-
   digitalWrite(WIEL_AL1,HIGH);
   digitalWrite(WIEL_AL2,LOW);
 
@@ -151,7 +135,6 @@ void left(int snelheid, int tijd = 0){
   Serial.println("Left");
 }
 void rotate_Left(int snelheid, int tijd = 0){
-  Movement_State = true;
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -173,7 +156,6 @@ void rotate_Left(int snelheid, int tijd = 0){
   Serial.println("Rotate Left");
 }
 void rotate_Right(int snelheid, int tijd = 0){
-  Movement_State = true;
 
   digitalWrite(WIEL_AL1,HIGH);
   digitalWrite(WIEL_AL2,LOW);
