@@ -8,27 +8,32 @@ const int JOYSTICK_Y_DISTANCE = ((255 - JOYSTICK_Y_CENTER) / 2); // 70
 const int JOYSTICK_X_CENTER = 109;
 const int JOYSTICK_X_DISTANCE = ((255 - JOYSTICK_X_CENTER) / 2); // 73
 
+//##################################################################    Variable    ############################################################################
+double Joystick_X;                    
+double Joystick_Y;
+int Joystick_Button; 
+int Rotating = 0;
+int Joystick_Control;
+RunningMedian Joystick_X_samples = RunningMedian(19);    
+RunningMedian Joystick_Y_samples = RunningMedian(19);
+
+extern Adafruit_MCP23008 mcp;
+extern int Movement_State;
+
+extern String Mode;
+void move(long period);
+
 //##################################################################    PinMode    ############################################################################
 void pinMode_Joystick(){
   pinMode(JOYSTICKPIN_X, INPUT);
-  pinMode(Joystick_Y, INPUT);
+  pinMode(JOYSTICKPIN_Y, INPUT);
   mcp.pinMode(JOYSTICKPIN_BUTTON, INPUT);
   mcp.pinMode(JOYSTICK_CONTROL, INPUT);
 
 }
-
-//##################################################################    Variable    ############################################################################
-extern double Joystick_X;                    
-extern double Joystick_Y;
-extern int Joystick_Button; 
-extern int Rotating;
-extern int Joystick_Control;
-extern RunningMedian Joystick_X_samples;    
-extern RunningMedian Joystick_Y_samples;
-
-extern Adafruit_MCP23008 mcp;
-
 //##################################################################    Functions    ############################################################################
+
+
 void joystick_Position(){
     Joystick_X_samples.add(map(analogRead(JOYSTICKPIN_X),0,4095,0,255));
     Joystick_X = Joystick_X_samples.getMedian();
@@ -51,7 +56,8 @@ void move_Joystick(){
   if(Joystick_Button == 0){
     if(Joystick_X < (255 - JOYSTICK_Y_DISTANCE)       &&       Joystick_X > JOYSTICK_Y_DISTANCE){
       if(Joystick_Y > (255 - JOYSTICK_X_DISTANCE)){
-        forward((Joystick_Y - (255 - JOYSTICK_X_DISTANCE)) * 2, 0); //* 3.45
+        forward(); //* 3.45
+        move(map(((Joystick_Y - (255 - JOYSTICK_X_DISTANCE)) * 2, 0), 0 ,70 , 250, 20) )
       }
       else if(Joystick_Y < JOYSTICK_X_DISTANCE){
         backward((73 - Joystick_Y) * 2, 0); // 3.45

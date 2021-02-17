@@ -1,17 +1,19 @@
 //##################################################################    Pin    ############################################################################
-const int WIEL_AL1 = 27; 
-const int WIEL_AL2 = 26; 
+const int WIEL_AL1 = 26; //27
+const int WIEL_AL2 = 27; //26
 
-const int WIEL_AR1 = 32; 
-const int WIEL_AR2 = 19; 
+const int WIEL_AR1 = 23; //32
+const int WIEL_AR2 = 19; //19
 
-const int WIEL_VR1 = 23; 
-const int WIEL_VR2 = 13;
+const int WIEL_VR1 = 13; //13
+const int WIEL_VR2 = 32	; //23
 
-const int WIEL_VL1 = 25; 
-const int WIEL_VL2 = 33; 
+const int WIEL_VL1 = 25; //33
+const int WIEL_VL2 = 33; //25
 
-const int ENABLE_PIN = 14;
+const int DISABLE_PIN = 14;
+
+extern RunningMedian Memory;
 
 //##################################################################    PinMode    ############################################################################
 void pinMode_Basic_Movement(){
@@ -28,14 +30,14 @@ void pinMode_Basic_Movement(){
   pinMode(WIEL_VL1,OUTPUT);
   pinMode(WIEL_VL2,OUTPUT);
 
-  pinMode(ENABLE_PIN, OUTPUT);
+  pinMode(DISABLE_PIN, OUTPUT);
   
 
 }
 
 //##################################################################    Functions    ############################################################################
 void stop(){
-  Movement_State = 0;
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1, LOW);
   digitalWrite(WIEL_AL2, LOW);
@@ -49,9 +51,12 @@ void stop(){
   digitalWrite(WIEL_VL1, LOW);
   digitalWrite(WIEL_VL2, LOW);
 
+  digitalWrite(DISABLE_PIN, HIGH);
+
   Serial.println("Stop");
 }
-void forward(int snelheid, int tijd = 0){
+void forward(){
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1, HIGH);
   digitalWrite(WIEL_AL2, LOW);
@@ -65,14 +70,13 @@ void forward(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1, HIGH);
   digitalWrite(WIEL_VL2, LOW);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
 
+  Memory.add(1);
   Serial.println("Forward");
 }
-void backward(int snelheid, int tijd = 0){
+void backward(){
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -86,14 +90,13 @@ void backward(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1,LOW);
   digitalWrite(WIEL_VL2,HIGH);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
+  Memory.add(2);
   Serial.println("Backwards");
   
 }
-void right(int snelheid, int tijd = 0){
+void right(){
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -107,14 +110,14 @@ void right(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1,HIGH);
   digitalWrite(WIEL_VL2,LOW);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
 
+  Memory.add(3);
   Serial.println("Right");
 }
-void left(int snelheid, int tijd = 0){
+void left(){
+  digitalWrite(DISABLE_PIN, LOW);
+
   digitalWrite(WIEL_AL1,HIGH);
   digitalWrite(WIEL_AL2,LOW);
 
@@ -127,14 +130,13 @@ void left(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1,LOW);
   digitalWrite(WIEL_VL2,HIGH);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
 
+  Memory.add(4);
   Serial.println("Left");
 }
-void rotate_Left(int snelheid, int tijd = 0){
+void rotate_Left(){
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,LOW);
   digitalWrite(WIEL_AL2,HIGH);
@@ -148,14 +150,13 @@ void rotate_Left(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1,LOW);
   digitalWrite(WIEL_VL2,HIGH);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
 
+  Memory.add(5);
   Serial.println("Rotate Left");
 }
-void rotate_Right(int snelheid, int tijd = 0){
+void rotate_Right(){
+  digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,HIGH);
   digitalWrite(WIEL_AL2,LOW);
@@ -169,10 +170,8 @@ void rotate_Right(int snelheid, int tijd = 0){
   digitalWrite(WIEL_VL1,HIGH);
   digitalWrite(WIEL_VL2,LOW);
 
-  if(tijd != 0){
-    delay(tijd);
-    stop();
-  }
+  digitalWrite(DISABLE_PIN, HIGH);
 
+  Memory.add(6);
   Serial.println("Rotate Right");
 }
