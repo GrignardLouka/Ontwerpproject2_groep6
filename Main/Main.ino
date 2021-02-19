@@ -24,7 +24,6 @@ Sahan Baris
 const int BATTERY_LEVEL_PIN = 18; 
 const int BUZZER_BATTERY_LEVEL = 5;
 
-long sensor_right();
 //##################################################################    Variable    ############################################################################
 String Mode;
             /*
@@ -83,27 +82,24 @@ void buzzer_Switchmode(){
 
 //##################################################################    Setup    ############################################################################
 void setup() {
-	Serial.println("Starting setup");
-	//Start serial
 	Serial.begin (115200);
 
-	//Start MCP23008
+	Serial.println("Starting setup");
+	
+	//Start MCP23008 and BNO055
 	mcp.begin();
 	bno.begin();
 	delay(1000);
-	bno.setExtCrystalUse(true);
+	bno.setExtCrystalUse(true);	//Use for more acurate measurements
 
 	//Battery check
 	pinMode(BATTERY_LEVEL_PIN, INPUT);
 	pinMode(BUZZER_BATTERY_LEVEL, OUTPUT);
 
-	pinMode(LED, OUTPUT);
-
-
-	for(int i = 0; i < 4; i++){
-	digitalWrite(LED, HIGH);
+	for(int i = 0; i < 8; i++){
+	tone(BUZZER_BATTERY_LEVEL, 2000);
 	delay(200);
-	digitalWrite(LED, LOW);
+	noTone(BUZZER_BATTERY_LEVEL);
 	delay(200);
 	i++;
 	}
@@ -122,36 +118,13 @@ void setup() {
 
 //##################################################################    Loop    ############################################################################
 void loop(){
-	Serial.println("Start loop");
-	scan();
-	Serial.println("done scanning");
-	/*
+		
+	
 	Serial.println("Starting loop");
-	backward(200);
-	for(int i  = 0; i < 30; i++){
-		digitalWrite(DISABLE_PIN, LOW);
-		delay(20);
-		digitalWrite(DISABLE_PIN, HIGH);
-		delay(20);
-	}
-	digitalWrite(DISABLE_PIN, LOW);
-	stop();
-	digitalWrite(DISABLE_PIN, HIGH);
+	
+	
 
-	delay(1000);
-	digitalWrite(DISABLE_PIN, LOW);
-	forward(200);
-	digitalWrite(DISABLE_PIN, HIGH);
-	for(int i  = 0; i < 30; i++){
-		digitalWrite(DISABLE_PIN, LOW);
-		delay(20);
-		digitalWrite(DISABLE_PIN, HIGH);
-		delay(20);
-	}
-	*/
-
-
-	//initialize();
+	initialize();
 
 	if(Mode == "Battery not connected")   { Serial.println("Battery not connected");
 											noTone(BUZZER_BATTERY_LEVEL);
@@ -166,8 +139,7 @@ void loop(){
 	else if(Mode == "Joystick mode")      {
 											noTone(BUZZER_BATTERY_LEVEL);
 											Serial.println("Joystick mode");
-											joystick_Position();
-											move_Joystick();
+											joystick_Position();										
 											}
 
 	else if(Mode == "Automatic mode")     {
@@ -182,7 +154,7 @@ void loop(){
 																				State = "Moving";
 																			}
 											else if(State == "Moving")      { 
-																				move();																				
+																				//move();																				
 																				State = "Scanning";
 																			}
 											else if(State == "Collision")   {      

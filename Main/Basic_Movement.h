@@ -14,6 +14,9 @@ const int WIEL_VL2 = 33; //25
 const int DISABLE_PIN = 14;
 
 extern RunningMedian Memory;
+extern bool Climbing;
+extern bool Descending;
+extern String Mode;
 
 //##################################################################    PinMode    ############################################################################
 void pinMode_Basic_Movement(){
@@ -37,6 +40,20 @@ void pinMode_Basic_Movement(){
 
 //##################################################################    Functions    ############################################################################
 void stop(){
+
+	analogWrite(WIEL_AL1, 0);
+	analogWrite(WIEL_AL2, 0);
+
+	analogWrite(WIEL_AR1, 0);
+	analogWrite(WIEL_AR2, 0);
+
+	analogWrite(WIEL_VR1, 0);
+	analogWrite(WIEL_VR2, 0);
+
+	analogWrite(WIEL_VL1, 0);
+	analogWrite(WIEL_VL2, 0);
+
+/*
   digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1, LOW);
@@ -51,51 +68,98 @@ void stop(){
   digitalWrite(WIEL_VL1, LOW);
   digitalWrite(WIEL_VL2, LOW);
 
-  digitalWrite(DISABLE_PIN, HIGH);
-
+ digitalWrite(DISABLE_PIN, HIGH);
+*/
   Serial.println("Stop");
 }
-void forward(){
-  digitalWrite(DISABLE_PIN, LOW);
+void forward(int snelheid){
+/*
+  analogWrite(WIEL_AL1, snelheid);
+  analogWrite(WIEL_AL2, 0);
 
-  digitalWrite(WIEL_AL1, HIGH);
-  digitalWrite(WIEL_AL2, LOW);
+  analogWrite(WIEL_AR1, snelheid);
+  analogWrite(WIEL_AR2, 0);
 
-  digitalWrite(WIEL_AR1, HIGH);
-  digitalWrite(WIEL_AR2, LOW);
+  analogWrite(WIEL_VR1, snelheid);
+  analogWrite(WIEL_VR2, 0);
 
-  digitalWrite(WIEL_VR1, HIGH);
-  digitalWrite(WIEL_VR2, LOW);
+  analogWrite(WIEL_VL1, snelheid);
+  analogWrite(WIEL_VL2, 0);
+*/
+  
+	digitalWrite(DISABLE_PIN, LOW);
 
-  digitalWrite(WIEL_VL1, HIGH);
-  digitalWrite(WIEL_VL2, LOW);
+	digitalWrite(WIEL_AL1, HIGH);
+	digitalWrite(WIEL_AL2, LOW);
 
-  digitalWrite(DISABLE_PIN, HIGH);
+	digitalWrite(WIEL_AR1, HIGH);
+	digitalWrite(WIEL_AR2, LOW);
 
-  Memory.add(1);
+	digitalWrite(WIEL_VR1, HIGH);
+	digitalWrite(WIEL_VR2, LOW);
+
+	digitalWrite(WIEL_VL1, HIGH);
+	digitalWrite(WIEL_VL2, LOW);
+
+	digitalWrite(DISABLE_PIN, HIGH);
+
+	 Memory.add(1);
+	
+
+ 
   Serial.println("Forward");
 }
-void backward(){
-  digitalWrite(DISABLE_PIN, LOW);
+void backward(int snelheid){
+/*
+	analogWrite(WIEL_AL1,0);
+	analogWrite(WIEL_AL2,snelheid);
 
-  digitalWrite(WIEL_AL1,LOW);
-  digitalWrite(WIEL_AL2,HIGH);
+	analogWrite(WIEL_AR1,0);
+	analogWrite(WIEL_AR2,snelheid);
 
-  digitalWrite(WIEL_AR1,LOW);
-  digitalWrite(WIEL_AR2,HIGH);
+	analogWrite(WIEL_VR1,0);
+	analogWrite(WIEL_VR2,snelheid);
 
-  digitalWrite(WIEL_VR1,LOW);
-  digitalWrite(WIEL_VR2,HIGH);
+	analogWrite(WIEL_VL1,0);
+	analogWrite(WIEL_VL2,snelheid);
+*/
+	
+	digitalWrite(DISABLE_PIN, LOW);
 
-  digitalWrite(WIEL_VL1,LOW);
-  digitalWrite(WIEL_VL2,HIGH);
+	digitalWrite(WIEL_AL1,LOW);
+	digitalWrite(WIEL_AL2,HIGH);
 
-  digitalWrite(DISABLE_PIN, HIGH);
-  Memory.add(2);
-  Serial.println("Backwards");
+	digitalWrite(WIEL_AR1,LOW);
+	digitalWrite(WIEL_AR2,HIGH);
+
+	digitalWrite(WIEL_VR1,LOW);
+	digitalWrite(WIEL_VR2,HIGH);
+
+	digitalWrite(WIEL_VL1,LOW);
+	digitalWrite(WIEL_VL2,HIGH);
+
+	digitalWrite(DISABLE_PIN, HIGH);
+	Memory.add(2);
+	
+
+	Serial.println("Backwards");
   
 }
-void right(){
+void right(int snelheid){
+  
+	analogWrite(WIEL_AL1,0);
+	analogWrite(WIEL_AL2,snelheid);
+
+	analogWrite(WIEL_AR1,snelheid);
+	analogWrite(WIEL_AR2,0);
+
+	analogWrite(WIEL_VR1,0);
+	analogWrite(WIEL_VR2,snelheid);
+
+	analogWrite(WIEL_VL1,snelheid);
+	analogWrite(WIEL_VL2,0);
+
+  /*
   digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,LOW);
@@ -110,12 +174,27 @@ void right(){
   digitalWrite(WIEL_VL1,HIGH);
   digitalWrite(WIEL_VL2,LOW);
 
-  digitalWrite(DISABLE_PIN, HIGH);
+  //digitalWrite(DISABLE_PIN, HIGH);
 
   Memory.add(3);
+	*/
+
   Serial.println("Right");
 }
-void left(){
+void left(int snelheid){
+
+	analogWrite(WIEL_AL1,snelheid);
+	analogWrite(WIEL_AL2,0);
+
+	analogWrite(WIEL_AR1,0);
+	analogWrite(WIEL_AR2,snelheid);
+
+	analogWrite(WIEL_VR1,snelheid);
+	analogWrite(WIEL_VR2,0);
+
+	analogWrite(WIEL_VL1,0);
+	analogWrite(WIEL_VL2,snelheid);
+  /*
   digitalWrite(DISABLE_PIN, LOW);
 
   digitalWrite(WIEL_AL1,HIGH);
@@ -133,45 +212,103 @@ void left(){
   digitalWrite(DISABLE_PIN, HIGH);
 
   Memory.add(4);
+
+  */
   Serial.println("Left");
 }
-void rotate_Left(){
-  digitalWrite(DISABLE_PIN, LOW);
+void rotate_left(int snelheid){
 
-  digitalWrite(WIEL_AL1,LOW);
-  digitalWrite(WIEL_AL2,HIGH);
+	analogWrite(WIEL_AL1,0);
+	analogWrite(WIEL_AL2,snelheid);
 
-  digitalWrite(WIEL_AR1,HIGH);
-  digitalWrite(WIEL_AR2,LOW);
+	analogWrite(WIEL_AR1,snelheid);
+	analogWrite(WIEL_AR2,0);
 
-  digitalWrite(WIEL_VR1,HIGH);
-  digitalWrite(WIEL_VR2,LOW);
+	analogWrite(WIEL_VR1,snelheid);
+	analogWrite(WIEL_VR2,0);
 
-  digitalWrite(WIEL_VL1,LOW);
-  digitalWrite(WIEL_VL2,HIGH);
+	analogWrite(WIEL_VL1,0);
+	analogWrite(WIEL_VL2,snelheid);
 
-  digitalWrite(DISABLE_PIN, HIGH);
 
-  Memory.add(5);
-  Serial.println("Rotate Left");
+	/*
+ 	digitalWrite(DISABLE_PIN, LOW);
+
+	digitalWrite(WIEL_AL1,LOW);
+	digitalWrite(WIEL_AL2,HIGH);
+
+	digitalWrite(WIEL_AR1,HIGH);
+	digitalWrite(WIEL_AR2,LOW);
+
+	digitalWrite(WIEL_VR1,HIGH);
+	digitalWrite(WIEL_VR2,LOW);
+
+	digitalWrite(WIEL_VL1,LOW);
+	digitalWrite(WIEL_VL2,HIGH);
+
+	digitalWrite(DISABLE_PIN, HIGH);
+
+	Memory.add(5);
+	*/
+
+	Serial.println("Rotate Left");
 }
-void rotate_Right(){
-  digitalWrite(DISABLE_PIN, LOW);
+void rotate_right(int snelheid){
 
-  digitalWrite(WIEL_AL1,HIGH);
-  digitalWrite(WIEL_AL2,LOW);
+	analogWrite(WIEL_AL1,snelheid);
+	analogWrite(WIEL_AL2,0);
 
-  digitalWrite(WIEL_AR1,LOW);
-  digitalWrite(WIEL_AR2,HIGH);
+	analogWrite(WIEL_AR1,0);
+	analogWrite(WIEL_AR2,snelheid);
 
-  digitalWrite(WIEL_VR1,LOW);
-  digitalWrite(WIEL_VR2,HIGH);
+	analogWrite(WIEL_VR1,0);
+	analogWrite(WIEL_VR2,snelheid);
 
-  digitalWrite(WIEL_VL1,HIGH);
-  digitalWrite(WIEL_VL2,LOW);
+	analogWrite(WIEL_VL1,snelheid);
+	analogWrite(WIEL_VL2,0);
 
-  digitalWrite(DISABLE_PIN, HIGH);
+	/*
+ 	digitalWrite(DISABLE_PIN, LOW);
 
-  Memory.add(6);
-  Serial.println("Rotate Right");
+	digitalWrite(WIEL_AL1,HIGH);
+	digitalWrite(WIEL_AL2,LOW);
+
+	digitalWrite(WIEL_AR1,LOW);
+	digitalWrite(WIEL_AR2,HIGH);
+
+	digitalWrite(WIEL_VR1,LOW);
+	digitalWrite(WIEL_VR2,HIGH);
+
+	digitalWrite(WIEL_VL1,HIGH);
+	digitalWrite(WIEL_VL2,LOW);
+
+	digitalWrite(DISABLE_PIN, HIGH);
+
+	Memory.add(6);
+	*/
+	Serial.println("Rotate Right");
+}
+void forward_right(int snelheid){
+	analogWrite(WIEL_AL1, 0);
+	analogWrite(WIEL_AL2, 0);
+	analogWrite(WIEL_AR1, snelheid);
+	analogWrite(WIEL_AR2, 0);
+	analogWrite(WIEL_VR1, 0);
+	analogWrite(WIEL_VR2, 0);
+	analogWrite(WIEL_VL1, snelheid);
+	analogWrite(WIEL_VL2, 0); 
+
+	Serial.println("Moving forward right");
+}
+void forward_left(int snelheid){
+	analogWrite(WIEL_AL1, snelheid);
+	analogWrite(WIEL_AL2, 0);
+	analogWrite(WIEL_AR1, 0);
+	analogWrite(WIEL_AR2, 0);
+	analogWrite(WIEL_VR1, snelheid);
+	analogWrite(WIEL_VR2, 0);
+	analogWrite(WIEL_VL1, 0);
+	analogWrite(WIEL_VL2, 0); 
+
+	Serial.println("Moving forward left");
 }
