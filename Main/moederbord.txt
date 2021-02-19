@@ -1,6 +1,0 @@
-
-4 sensoren
-expander
-BNO055
-spanningsdeler voor battery charge
-buzzer
